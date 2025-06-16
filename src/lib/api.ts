@@ -1,7 +1,7 @@
 import axios from "axios";
+import { tokenUtils } from "../utils/auth";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:3001";
+const API_BASE_URL: string = import.meta.env.VITE_API_BASE_URL;
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -11,11 +11,10 @@ export const apiClient = axios.create({
   },
 });
 
-// Request interceptor for auth tokens
+// Request interceptor to add auth token
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("accessToken");
-
+    const token = tokenUtils.getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -24,13 +23,12 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor for error handling
+// Response interceptor for handling auth errors
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem("accessToken");
-      window.location.href = "/login";
+      tokenUtils.removeToken();
     }
     return Promise.reject(error);
   }

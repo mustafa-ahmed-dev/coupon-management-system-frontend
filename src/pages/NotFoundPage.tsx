@@ -1,4 +1,4 @@
-function NotFoundPage({
+export function NotFoundPage({
   resource,
   id,
 }: {
@@ -14,5 +14,3 @@ function NotFoundPage({
     </div>
   );
 }
-
-export default NotFoundPage;

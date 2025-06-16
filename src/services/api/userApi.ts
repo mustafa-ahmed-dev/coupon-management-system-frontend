@@ -1,32 +1,53 @@
-// src/services/api/userApi.ts
 import { apiClient } from "../../lib/api";
-import type { User, CreateUserData, UpdateUserData } from "../../types/api";
+import type { User } from "../../types/api";
+import type { CreateUserData, UpdateUserPassword } from "../../types/api";
 
 export const userApi = {
   getUsers: async (): Promise<User[]> => {
-    const { data } = await apiClient.get("/users");
+    const { data } = await apiClient.get<User[]>("/users");
     return data;
   },
 
-  getUser: async (id: number): Promise<User> => {
-    const { data } = await apiClient.get(`/users/${id}`);
+  getUser: async (userId: number): Promise<User> => {
+    const { data } = await apiClient.get<User>(`/users/${userId}`);
     return data;
   },
 
   createUser: async (userData: CreateUserData): Promise<User> => {
-    const { data } = await apiClient.post("/users", userData);
+    const { data } = await apiClient.post<User>("/users", userData);
     return data;
   },
 
-  updateUser: async ({
-    id,
-    ...userData
-  }: UpdateUserData & { id: number }): Promise<User> => {
-    const { data } = await apiClient.put(`/users/${id}`, userData);
+  updateUser: async (
+    userId: number,
+    userData: Partial<CreateUserData>
+  ): Promise<User> => {
+    const { data } = await apiClient.patch<User>(`/users/${userId}`, userData);
     return data;
   },
 
-  deleteUser: async (id: number): Promise<void> => {
-    await apiClient.delete(`/users/${id}`);
+  activateUser: async (userId: number): Promise<User> => {
+    const { data } = await apiClient.post<User>(`/users/${userId}/activate`);
+    return data;
+  },
+
+  deactivateUser: async (userId: number): Promise<User> => {
+    const { data } = await apiClient.post<User>(`/users/${userId}/deactivate`);
+    return data;
+  },
+
+  updateUserPassword: async (
+    userId: number,
+    passwordData: UpdateUserPassword
+  ): Promise<User> => {
+    const { data } = await apiClient.put<User>(
+      `/users/${userId}/password`,
+      passwordData
+    );
+    return data;
+  },
+
+  deleteUser: async (userId: number): Promise<void> => {
+    await apiClient.delete(`/users/${userId}`);
   },
 };

@@ -15,7 +15,9 @@ import { Route as LoginImport } from './routes/login'
 import { Route as LayoutImport } from './routes/_layout'
 import { Route as IndexImport } from './routes/index'
 import { Route as UsersIndexImport } from './routes/users/index'
+import { Route as CouponsIndexImport } from './routes/coupons/index'
 import { Route as UsersIdImport } from './routes/users/$id'
+import { Route as CouponsUsedImport } from './routes/coupons/used'
 
 // Create/Update Routes
 
@@ -42,9 +44,21 @@ const UsersIndexRoute = UsersIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const CouponsIndexRoute = CouponsIndexImport.update({
+  id: '/coupons/',
+  path: '/coupons/',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const UsersIdRoute = UsersIdImport.update({
   id: '/users/$id',
   path: '/users/$id',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const CouponsUsedRoute = CouponsUsedImport.update({
+  id: '/coupons/used',
+  path: '/coupons/used',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -73,11 +87,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
+    '/coupons/used': {
+      id: '/coupons/used'
+      path: '/coupons/used'
+      fullPath: '/coupons/used'
+      preLoaderRoute: typeof CouponsUsedImport
+      parentRoute: typeof rootRoute
+    }
     '/users/$id': {
       id: '/users/$id'
       path: '/users/$id'
       fullPath: '/users/$id'
       preLoaderRoute: typeof UsersIdImport
+      parentRoute: typeof rootRoute
+    }
+    '/coupons/': {
+      id: '/coupons/'
+      path: '/coupons'
+      fullPath: '/coupons'
+      preLoaderRoute: typeof CouponsIndexImport
       parentRoute: typeof rootRoute
     }
     '/users/': {
@@ -96,7 +124,9 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof LayoutRoute
   '/login': typeof LoginRoute
+  '/coupons/used': typeof CouponsUsedRoute
   '/users/$id': typeof UsersIdRoute
+  '/coupons': typeof CouponsIndexRoute
   '/users': typeof UsersIndexRoute
 }
 
@@ -104,7 +134,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof LayoutRoute
   '/login': typeof LoginRoute
+  '/coupons/used': typeof CouponsUsedRoute
   '/users/$id': typeof UsersIdRoute
+  '/coupons': typeof CouponsIndexRoute
   '/users': typeof UsersIndexRoute
 }
 
@@ -113,16 +145,40 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_layout': typeof LayoutRoute
   '/login': typeof LoginRoute
+  '/coupons/used': typeof CouponsUsedRoute
   '/users/$id': typeof UsersIdRoute
+  '/coupons/': typeof CouponsIndexRoute
   '/users/': typeof UsersIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '' | '/login' | '/users/$id' | '/users'
+  fullPaths:
+    | '/'
+    | ''
+    | '/login'
+    | '/coupons/used'
+    | '/users/$id'
+    | '/coupons'
+    | '/users'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '' | '/login' | '/users/$id' | '/users'
-  id: '__root__' | '/' | '/_layout' | '/login' | '/users/$id' | '/users/'
+  to:
+    | '/'
+    | ''
+    | '/login'
+    | '/coupons/used'
+    | '/users/$id'
+    | '/coupons'
+    | '/users'
+  id:
+    | '__root__'
+    | '/'
+    | '/_layout'
+    | '/login'
+    | '/coupons/used'
+    | '/users/$id'
+    | '/coupons/'
+    | '/users/'
   fileRoutesById: FileRoutesById
 }
 
@@ -130,7 +186,9 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LayoutRoute: typeof LayoutRoute
   LoginRoute: typeof LoginRoute
+  CouponsUsedRoute: typeof CouponsUsedRoute
   UsersIdRoute: typeof UsersIdRoute
+  CouponsIndexRoute: typeof CouponsIndexRoute
   UsersIndexRoute: typeof UsersIndexRoute
 }
 
@@ -138,7 +196,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LayoutRoute: LayoutRoute,
   LoginRoute: LoginRoute,
+  CouponsUsedRoute: CouponsUsedRoute,
   UsersIdRoute: UsersIdRoute,
+  CouponsIndexRoute: CouponsIndexRoute,
   UsersIndexRoute: UsersIndexRoute,
 }
 
@@ -155,7 +215,9 @@ export const routeTree = rootRoute
         "/",
         "/_layout",
         "/login",
+        "/coupons/used",
         "/users/$id",
+        "/coupons/",
         "/users/"
       ]
     },
@@ -168,8 +230,14 @@ export const routeTree = rootRoute
     "/login": {
       "filePath": "login.tsx"
     },
+    "/coupons/used": {
+      "filePath": "coupons/used.tsx"
+    },
     "/users/$id": {
       "filePath": "users/$id.tsx"
+    },
+    "/coupons/": {
+      "filePath": "coupons/index.tsx"
     },
     "/users/": {
       "filePath": "users/index.tsx"

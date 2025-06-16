@@ -1,4 +1,3 @@
-// src/features/users/components/EditUserButton.tsx
 import { useState } from "react";
 import { useUpdateUser } from "../../../services/queries/userQueries";
 import type { User } from "../../../types/api";
@@ -8,9 +7,9 @@ interface EditUserButtonProps {
 }
 
 export function EditUserButton({ user }: EditUserButtonProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState(user.name);
-  const [email, setEmail] = useState(user.email);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [name, setName] = useState<string>(user.name);
+  const [email, setEmail] = useState<string>(user.email);
 
   const updateUser = useUpdateUser();
 
@@ -19,8 +18,10 @@ export function EditUserButton({ user }: EditUserButtonProps) {
     try {
       await updateUser.mutateAsync({
         id: user.id,
-        name,
-        email,
+        data: {
+          name,
+          email,
+        },
       });
       setIsEditing(false);
     } catch (error) {

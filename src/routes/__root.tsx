@@ -1,45 +1,33 @@
-// src/routes/__root.tsx
-import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
+import { TanStackRouterDevtools } from "@tanstack/router-devtools";
+import type { RouterContext } from "../types/store";
+import { useAppSelector } from "../store/hooks/redux";
+import type { RootState } from "../store";
+import { ConfigProvider, App as AntApp } from "antd";
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootComponent,
 });
 
 function RootComponent() {
+  const auth = useAppSelector((state: RootState) => ({
+    isAuthenticated: state.auth.isAuthenticated,
+    user: state.auth.user,
+  })); // FIXME: use the auth
+
   return (
-    <div className="min-h-screen">
-      {/* Navigation Header */}
-      <nav className="p-4 bg-gray-100 border-b">
-        <div className="flex gap-4">
-          <Link
-            to="/"
-            className="text-blue-600 hover:text-blue-800 [&.active]:font-bold [&.active]:text-blue-900"
-          >
-            Home
-          </Link>
-          <Link
-            to="/users"
-            className="text-blue-600 hover:text-blue-800 [&.active]:font-bold [&.active]:text-blue-900"
-          >
-            Users
-          </Link>
-          <Link
-            to="/login"
-            className="text-blue-600 hover:text-blue-800 [&.active]:font-bold [&.active]:text-blue-900"
-          >
-            Login
-          </Link>
-        </div>
-      </nav>
-
-      {/* Main Content Area */}
-      <main className="p-4">
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: "#1890ff",
+          borderRadius: 6,
+        },
+      }}
+    >
+      <AntApp>
         <Outlet />
-      </main>
-
-      {/* Dev Tools */}
-      <TanStackRouterDevtools initialIsOpen={false} />
-    </div>
+        <TanStackRouterDevtools position="bottom-right" />
+      </AntApp>
+    </ConfigProvider>
   );
 }

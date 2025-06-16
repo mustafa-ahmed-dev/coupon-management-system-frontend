@@ -1,10 +1,41 @@
-function LoginPage() {
+import { Layout, Card, theme } from "antd";
+import { LoginForm } from "../features/auth/components/LoginForm";
+
+const { Content } = Layout;
+
+export function LoginPage() {
+  const { token } = theme.useToken();
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">Login</h1>
-      <p>This is the login page content.</p>
-    </div>
+    <Layout
+      style={{
+        minHeight: "100vh",
+        backgroundColor: token.colorBgLayout,
+      }}
+    >
+      <Content
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "50px",
+        }}
+      >
+        <Card
+          style={{
+            width: "100%",
+            maxWidth: 400,
+            boxShadow: token.boxShadow,
+          }}
+          styles={{
+            body: {
+              padding: "40px",
+            },
+          }}
+        >
+          <LoginForm />
+        </Card>
+      </Content>
+    </Layout>
   );
 }
-
-export default LoginPage;

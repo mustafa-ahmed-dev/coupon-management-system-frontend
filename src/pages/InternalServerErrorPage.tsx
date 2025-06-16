@@ -1,4 +1,4 @@
-function InternalServerErrorPage({
+export function InternalServerErrorPage({
   resource,
   error,
 }: {
@@ -14,5 +14,3 @@ function InternalServerErrorPage({
     </div>
   );
 }
-
-export default InternalServerErrorPage;
