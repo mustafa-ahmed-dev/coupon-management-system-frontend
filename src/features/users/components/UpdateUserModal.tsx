@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Modal, Form, Input, Select, Switch, Popconfirm, Button } from "antd";
+import { Modal, Form, Input, Select, Popconfirm, Button } from "antd";
 import { useUpdateUser } from "../services/userQueries";
 import type { User } from "../../../types/api";
 import type { UpdateUserData } from "../../../types/api";
@@ -109,14 +109,6 @@ export function UpdateUserModal({ open, onClose, user }: UpdateUserModalProps) {
             <Select.Option value="manager">Manager</Select.Option>
             <Select.Option value="admin">Admin</Select.Option>
           </Select>
-        </Form.Item>
-
-        <Form.Item
-          name="isActive"
-          label="Active Status"
-          valuePropName="checked"
-        >
-          <Switch checkedChildren="Active" unCheckedChildren="Inactive" />
         </Form.Item>
 
         <Form.Item style={{ marginBottom: 0, textAlign: "right" }}>

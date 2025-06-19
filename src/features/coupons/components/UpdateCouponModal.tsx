@@ -1,4 +1,12 @@
-import { Modal, Form, Input, InputNumber, Select, Popconfirm } from "antd";
+import {
+  Modal,
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  Popconfirm,
+  Button,
+} from "antd";
 import { useUpdateCoupon } from "../services/couponQueries";
 import type { Coupon } from "../../../types/api";
 import type { CreateCouponData } from "../../../services/api/couponApi";
@@ -29,6 +37,9 @@ export function UpdateCouponModal({
   }, [coupon, open, form]);
 
   const handleSubmit = (values: Partial<CreateCouponData>) => {
+    console.log("Form submitted with values:", values); // Add this line
+    console.log("Current form values:", form.getFieldsValue()); // Add this line
+
     if (!coupon) return;
 
     updateCouponMutation.mutate(
@@ -77,10 +88,6 @@ export function UpdateCouponModal({
           <Input
             placeholder="Enter coupon code"
             style={{ textTransform: "uppercase" }}
-            onChange={(e) => {
-              const value = e.target.value.toUpperCase();
-              form.setFieldValue("code", value);
-            }}
           />
         </Form.Item>
 
@@ -110,18 +117,20 @@ export function UpdateCouponModal({
           <InputNumber
             placeholder="Enter amount"
             style={{ width: "100%" }}
-            min={1}
-            step={1}
+            min={0.01}
+            step={0.01}
             precision={2}
             formatter={(value) => {
               const watchedType = form.getFieldValue("type");
               if (watchedType === "percentage") {
                 return `${value}%`;
               }
-              return `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+              return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             }}
             parser={(value) => {
-              return value?.replace(/\$\s?|(,*)/g, "").replace("%", "") as any;
+              // Fix: Remove all non-numeric characters except decimal point
+              const cleaned = value?.replace(/[^0-9.]/g, "") || "";
+              return parseFloat(cleaned) ? cleaned : "0";
             }}
           />
         </Form.Item>
@@ -130,28 +139,35 @@ export function UpdateCouponModal({
           <Popconfirm
             title="Update Coupon"
             description="Are you sure you want to update this coupon?"
-            onConfirm={() => form.submit()}
+            onConfirm={() => {
+              console.log(
+                "Current form values before submit:",
+                form.getFieldsValue()
+              );
+              form.submit();
+            }}
             okText="Yes, Update"
             cancelText="Cancel"
             disabled={updateCouponMutation.isPending}
           >
-            <button
-              type="button"
-              className="ant-btn ant-btn-primary"
+            <Button
+              type="primary"
+              htmlType="button"
               disabled={updateCouponMutation.isPending}
               style={{ marginRight: 8 }}
             >
               {updateCouponMutation.isPending ? "Updating..." : "Update Coupon"}
-            </button>
+            </Button>
           </Popconfirm>
-          <button
-            type="button"
-            className="ant-btn"
+
+          <Button
+            type="default"
+            htmlType="button"
             onClick={handleCancel}
             disabled={updateCouponMutation.isPending}
           >
             Cancel
-          </button>
+          </Button>
         </Form.Item>
       </Form>
     </Modal>

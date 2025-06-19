@@ -26,6 +26,7 @@ import { useState } from "react";
 import type { Coupon } from "../types/api";
 import { CreateCouponModal } from "../features/coupons/components/CreateCouponModal";
 import { UpdateCouponModal } from "../features/coupons/components/UpdateCouponModal";
+import { useAppSelector } from "../store/hooks/redux";
 
 const { Title, Paragraph } = Typography;
 const { Search } = Input;
@@ -36,6 +37,14 @@ export function CouponsPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
+  const user = useAppSelector((state) => state.auth.user);
+  const isAdmin = user?.role === "admin";
+
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
 
   const { data: coupons = [], isLoading, error } = useCoupons();
   const deleteCouponMutation = useDeleteCoupon();
@@ -186,29 +195,31 @@ export function CouponsPage() {
               disabled={record.isUsed}
             />
           </Tooltip>
-          <Popconfirm
-            title="Delete Coupon"
-            description={`Are you sure you want to delete coupon "IQD {record.code}"?`}
-            onConfirm={() => handleDeleteCoupon(record.id)}
-            okText="Yes"
-            cancelText="No"
-            disabled={record.isUsed}
-          >
-            <Tooltip
-              title={
-                record.isUsed ? "Cannot delete used coupon" : "Delete Coupon"
-              }
+          {isAdmin && (
+            <Popconfirm
+              title="Delete Coupon"
+              description={`Are you sure you want to delete coupon "${record.code}"?`}
+              onConfirm={() => handleDeleteCoupon(record.id)}
+              okText="Yes"
+              cancelText="No"
+              disabled={record.isUsed}
             >
-              <Button
-                type="link"
-                danger
-                icon={<DeleteOutlined />}
-                size="small"
-                loading={deleteCouponMutation.isPending}
-                disabled={record.isUsed}
-              />
-            </Tooltip>
-          </Popconfirm>
+              <Tooltip
+                title={
+                  record.isUsed ? "Cannot delete used coupon" : "Delete Coupon"
+                }
+              >
+                <Button
+                  type="link"
+                  danger
+                  icon={<DeleteOutlined />}
+                  size="small"
+                  loading={deleteCouponMutation.isPending}
+                  disabled={record.isUsed}
+                />
+              </Tooltip>
+            </Popconfirm>
+          )}
         </Space>
       ),
     },
@@ -308,16 +319,32 @@ export function CouponsPage() {
         <Card>
           <Table
             columns={columns}
-            dataSource={filteredCoupons}
+            dataSource={filteredCoupons} // your filtered data
             loading={isLoading}
             rowKey="id"
             pagination={{
-              total: filteredCoupons.length,
-              pageSize: 10,
+              current: pagination.current,
+              pageSize: pagination.pageSize,
+              total: filteredCoupons.length, // or your actual total
               showSizeChanger: true,
               showQuickJumper: true,
               showTotal: (total, range) =>
                 `${range[0]}-${range[1]} of ${total} coupons`,
+              pageSizeOptions: ["10", "20", "50", "100"],
+              onChange: (page, pageSize) => {
+                setPagination({
+                  current: page,
+                  pageSize: pageSize || 10,
+                  total: filteredCoupons.length,
+                });
+              },
+              onShowSizeChange: (_current, size) => {
+                setPagination({
+                  current: 1, // Reset to first page when changing page size
+                  pageSize: size,
+                  total: filteredCoupons.length,
+                });
+              },
             }}
             scroll={{ x: 1200 }}
           />

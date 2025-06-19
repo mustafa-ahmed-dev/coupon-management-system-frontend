@@ -32,3 +32,18 @@ export const localstorageUtils = {
     }
   },
 };
+
+export const themeUtils = {
+  setTheme: (theme: "light" | "dark"): void => {
+    localstorageUtils.set("theme", theme);
+  },
+
+  getTheme: (): "light" | "dark" => {
+    const stored = localstorageUtils.get("theme");
+    return stored === "dark" ? "dark" : "light";
+  },
+
+  removeTheme: (): void => {
+    localstorageUtils.remove("theme");
+  },
+};

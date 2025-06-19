@@ -32,6 +32,7 @@ import type { MenuProps } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { CreateUserModal } from "../features/users/components/CreateUserModal";
 import { UpdateUserModal } from "../features/users/components/UpdateUserModal";
+import { useAppSelector } from "../store/hooks/redux";
 
 const { Title, Paragraph } = Typography;
 const { Search } = Input;
@@ -42,6 +43,14 @@ export function UsersPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const currentUser = useAppSelector((state) => state.auth.user);
+  const isAdmin = currentUser?.role === "admin";
+
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
 
   const { data: users = [], isLoading, error } = useUsers();
   const activateUserMutation = useActivateUser();
@@ -80,58 +89,68 @@ export function UsersPage() {
     deactivateUserMutation.mutate(userId);
   };
 
-  const getActionsMenu = (record: User): MenuProps["items"] => [
-    {
-      key: "view",
-      icon: <EyeOutlined />,
-      label: "View Details",
-      onClick: () => navigate({ to: `/users/${record.id}` }),
-    },
-    {
-      key: "edit",
-      icon: <EditOutlined />,
-      label: "Edit User",
-      onClick: () => handleOpenUpdateModal(record),
-    },
-    {
-      key: "password",
-      icon: <KeyOutlined />,
-      label: "Change Password",
-      onClick: () => navigate({ to: `/users/${record.id}/password` }),
-    },
-    {
-      type: "divider",
-    },
-    {
-      key: "activate",
-      icon: record.isActive ? <StopOutlined /> : <CheckOutlined />,
-      label: (
-        <Popconfirm
-          title={`${record.isActive ? "Deactivate" : "Activate"} User`}
-          description={`Are you sure you want to ${
-            record.isActive ? "deactivate" : "activate"
-          } ${record.name}?`}
-          onConfirm={() =>
-            record.isActive
-              ? handleDeactivateUser(record.id)
-              : handleActivateUser(record.id)
-          }
-          okText="Yes"
-          cancelText="No"
-          okButtonProps={{
-            loading:
-              activateUserMutation.isPending ||
-              deactivateUserMutation.isPending,
-          }}
-        >
-          <span>{record.isActive ? "Deactivate" : "Activate"}</span>
-        </Popconfirm>
-      ),
-    },
-    {
-      type: "divider",
-    },
-  ];
+  const getActionsMenu = (record: User): MenuProps["items"] => {
+    const baseItems: MenuProps["items"] = [
+      {
+        key: "view",
+        icon: <EyeOutlined />,
+        label: "View Details",
+        onClick: () => navigate({ to: `/users/${record.id}` }),
+      },
+      {
+        key: "edit",
+        icon: <EditOutlined />,
+        label: "Edit User",
+        onClick: () => handleOpenUpdateModal(record),
+      },
+      {
+        key: "password",
+        icon: <KeyOutlined />,
+        label: "Change Password",
+        onClick: () => navigate({ to: `/users/${record.id}/password` }),
+      },
+    ];
+
+    // Only add activate/deactivate option for admins
+    if (isAdmin) {
+      baseItems.push(
+        {
+          type: "divider",
+        } as any,
+        {
+          key: "activate",
+          icon: record.isActive ? <StopOutlined /> : <CheckOutlined />,
+          label: (
+            <Popconfirm
+              title={`${record.isActive ? "Deactivate" : "Activate"} User`}
+              description={`Are you sure you want to ${
+                record.isActive ? "deactivate" : "activate"
+              } ${record.name}?`}
+              onConfirm={() =>
+                record.isActive
+                  ? handleDeactivateUser(record.id)
+                  : handleActivateUser(record.id)
+              }
+              okText="Yes"
+              cancelText="No"
+              okButtonProps={{
+                loading:
+                  activateUserMutation.isPending ||
+                  deactivateUserMutation.isPending,
+              }}
+            >
+              <span>{record.isActive ? "Deactivate" : "Activate"}</span>
+            </Popconfirm>
+          ),
+        },
+        {
+          type: "divider",
+        } as any
+      );
+    }
+
+    return baseItems;
+  };
 
   const columns: ColumnsType<User> = [
     {
@@ -281,18 +300,34 @@ export function UsersPage() {
         <Card>
           <Table
             columns={columns}
-            dataSource={filteredUsers}
+            dataSource={filteredUsers} // your filtered Users
             loading={isLoading}
             rowKey="id"
             pagination={{
-              total: filteredUsers.length,
-              pageSize: 10,
+              current: pagination.current,
+              pageSize: pagination.pageSize,
+              total: filteredUsers.length, // or your actual total
               showSizeChanger: true,
               showQuickJumper: true,
               showTotal: (total, range) =>
-                `${range[0]}-${range[1]} of ${total} users`,
+                `${range[0]}-${range[1]} of ${total} items`,
+              pageSizeOptions: ["10", "20", "50", "100"],
+              onChange: (page, pageSize) => {
+                setPagination({
+                  current: page,
+                  pageSize: pageSize || 10,
+                  total: filteredUsers.length,
+                });
+              },
+              onShowSizeChange: (current, size) => {
+                setPagination({
+                  current: 1, // Reset to first page when changing page size
+                  pageSize: size,
+                  total: filteredUsers.length,
+                });
+              },
             }}
-            scroll={{ x: 1000 }}
+            scroll={{ x: 1200 }}
           />
         </Card>
 

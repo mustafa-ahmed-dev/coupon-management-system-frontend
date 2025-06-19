@@ -21,11 +21,18 @@ import {
 } from "@ant-design/icons";
 import { useStatistics } from "../services/queries/statisticsQueries";
 import type { Activity } from "../types/api"; // FIXME: use the activity
+import { useState } from "react";
 
 const { Title, Paragraph } = Typography;
 
 export function HomePage() {
   const { data: stats, isLoading, error } = useStatistics();
+
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
 
   if (error) {
     return (

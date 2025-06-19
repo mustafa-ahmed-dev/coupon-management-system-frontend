@@ -17,17 +17,24 @@ export function Layout({ children, showSidebar = true }: LayoutProps) {
   const sidebarOpen = useAppSelector((state) => state.ui.sidebarOpen);
 
   return (
-    <AntLayout style={{ minHeight: "100vh" }}>
+    <AntLayout
+      style={{
+        minHeight: "100vh",
+        backgroundColor: token.colorBgLayout, // Add this
+      }}
+    >
       <Header />
 
-      <AntLayout>
+      <AntLayout style={{ backgroundColor: token.colorBgLayout }}>
+        {" "}
+        {/* Add this */}
         {showSidebar && <Sidebar />}
-
         <AntLayout
           style={{
             marginLeft: showSidebar ? (sidebarOpen ? 250 : 80) : 0,
             marginTop: 64,
             transition: "margin-left 0.2s",
+            backgroundColor: token.colorBgLayout, // Add this
           }}
         >
           <Content

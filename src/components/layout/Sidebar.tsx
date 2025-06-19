@@ -1,7 +1,7 @@
 import { Layout, Menu, theme } from "antd";
 import { useLocation, useNavigate } from "@tanstack/react-router";
-import { useAppSelector, useAppDispatch } from "../../../store/hooks/redux";
-import { toggleSidebar } from "../../../store/slices/uiSlice";
+import { useAppSelector, useAppDispatch } from "../../store/hooks/redux";
+import { toggleSidebar } from "../../store/slices/uiSlice";
 import {
   DashboardOutlined,
   TeamOutlined,

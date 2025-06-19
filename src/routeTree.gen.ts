@@ -11,24 +11,26 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as ProfileImport } from './routes/profile'
 import { Route as LoginImport } from './routes/login'
-import { Route as LayoutImport } from './routes/_layout'
 import { Route as IndexImport } from './routes/index'
 import { Route as UsersIndexImport } from './routes/users/index'
 import { Route as CouponsIndexImport } from './routes/coupons/index'
 import { Route as UsersIdImport } from './routes/users/$id'
 import { Route as CouponsUsedImport } from './routes/coupons/used'
+import { Route as CouponsIdImport } from './routes/coupons/$id'
 
 // Create/Update Routes
+
+const ProfileRoute = ProfileImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const LoginRoute = LoginImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const LayoutRoute = LayoutImport.update({
-  id: '/_layout',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -62,6 +64,12 @@ const CouponsUsedRoute = CouponsUsedImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const CouponsIdRoute = CouponsIdImport.update({
+  id: '/coupons/$id',
+  path: '/coupons/$id',
+  getParentRoute: () => rootRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -73,18 +81,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/_layout': {
-      id: '/_layout'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof LayoutImport
-      parentRoute: typeof rootRoute
-    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginImport
+      parentRoute: typeof rootRoute
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileImport
+      parentRoute: typeof rootRoute
+    }
+    '/coupons/$id': {
+      id: '/coupons/$id'
+      path: '/coupons/$id'
+      fullPath: '/coupons/$id'
+      preLoaderRoute: typeof CouponsIdImport
       parentRoute: typeof rootRoute
     }
     '/coupons/used': {
@@ -122,8 +137,9 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '': typeof LayoutRoute
   '/login': typeof LoginRoute
+  '/profile': typeof ProfileRoute
+  '/coupons/$id': typeof CouponsIdRoute
   '/coupons/used': typeof CouponsUsedRoute
   '/users/$id': typeof UsersIdRoute
   '/coupons': typeof CouponsIndexRoute
@@ -132,8 +148,9 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '': typeof LayoutRoute
   '/login': typeof LoginRoute
+  '/profile': typeof ProfileRoute
+  '/coupons/$id': typeof CouponsIdRoute
   '/coupons/used': typeof CouponsUsedRoute
   '/users/$id': typeof UsersIdRoute
   '/coupons': typeof CouponsIndexRoute
@@ -143,8 +160,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/_layout': typeof LayoutRoute
   '/login': typeof LoginRoute
+  '/profile': typeof ProfileRoute
+  '/coupons/$id': typeof CouponsIdRoute
   '/coupons/used': typeof CouponsUsedRoute
   '/users/$id': typeof UsersIdRoute
   '/coupons/': typeof CouponsIndexRoute
@@ -155,8 +173,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | ''
     | '/login'
+    | '/profile'
+    | '/coupons/$id'
     | '/coupons/used'
     | '/users/$id'
     | '/coupons'
@@ -164,8 +183,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | ''
     | '/login'
+    | '/profile'
+    | '/coupons/$id'
     | '/coupons/used'
     | '/users/$id'
     | '/coupons'
@@ -173,8 +193,9 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/_layout'
     | '/login'
+    | '/profile'
+    | '/coupons/$id'
     | '/coupons/used'
     | '/users/$id'
     | '/coupons/'
@@ -184,8 +205,9 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  LayoutRoute: typeof LayoutRoute
   LoginRoute: typeof LoginRoute
+  ProfileRoute: typeof ProfileRoute
+  CouponsIdRoute: typeof CouponsIdRoute
   CouponsUsedRoute: typeof CouponsUsedRoute
   UsersIdRoute: typeof UsersIdRoute
   CouponsIndexRoute: typeof CouponsIndexRoute
@@ -194,8 +216,9 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  LayoutRoute: LayoutRoute,
   LoginRoute: LoginRoute,
+  ProfileRoute: ProfileRoute,
+  CouponsIdRoute: CouponsIdRoute,
   CouponsUsedRoute: CouponsUsedRoute,
   UsersIdRoute: UsersIdRoute,
   CouponsIndexRoute: CouponsIndexRoute,
@@ -213,8 +236,9 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/_layout",
         "/login",
+        "/profile",
+        "/coupons/$id",
         "/coupons/used",
         "/users/$id",
         "/coupons/",
@@ -224,11 +248,14 @@ export const routeTree = rootRoute
     "/": {
       "filePath": "index.tsx"
     },
-    "/_layout": {
-      "filePath": "_layout.tsx"
-    },
     "/login": {
       "filePath": "login.tsx"
+    },
+    "/profile": {
+      "filePath": "profile.tsx"
+    },
+    "/coupons/$id": {
+      "filePath": "coupons/$id.tsx"
     },
     "/coupons/used": {
       "filePath": "coupons/used.tsx"

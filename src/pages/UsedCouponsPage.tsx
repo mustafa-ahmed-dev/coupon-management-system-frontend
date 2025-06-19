@@ -26,6 +26,12 @@ export function UsedCouponsPage() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
 
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
+
   const { data: usedCoupons = [], isLoading, error } = useUsedCoupons();
 
   const filteredCoupons = usedCoupons.filter((coupon) =>
@@ -218,14 +224,32 @@ export function UsedCouponsPage() {
 
             <Table
               columns={columns}
-              dataSource={filteredCoupons}
-              rowKey="id"
+              dataSource={filteredCoupons} // your filtered Coupons
               loading={isLoading}
+              rowKey="id"
               pagination={{
+                current: pagination.current,
+                pageSize: pagination.pageSize,
+                total: filteredCoupons.length, // or your actual total
                 showSizeChanger: true,
                 showQuickJumper: true,
                 showTotal: (total, range) =>
-                  `${range[0]}-${range[1]} of ${total} used coupons`,
+                  `${range[0]}-${range[1]} of ${total} coupons`,
+                pageSizeOptions: ["10", "20", "50", "100"],
+                onChange: (page, pageSize) => {
+                  setPagination({
+                    current: page,
+                    pageSize: pageSize || 10,
+                    total: filteredCoupons.length,
+                  });
+                },
+                onShowSizeChange: (_current, size) => {
+                  setPagination({
+                    current: 1, // Reset to first page when changing page size
+                    pageSize: size,
+                    total: filteredCoupons.length,
+                  });
+                },
               }}
               scroll={{ x: 1000 }}
             />

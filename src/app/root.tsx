@@ -7,6 +7,7 @@ import { router } from "../lib/router";
 import { useInitializeAuth } from "../features/auth/services/authQueries";
 import { useAppSelector } from "../store/hooks/redux";
 import { queryClient } from "../lib/queryClient";
+import * as Sentry from "@sentry/react";
 
 function AppWithAuth() {
   const { isLoading } = useInitializeAuth();
@@ -41,7 +42,9 @@ export function App() {
   return (
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
-        <AppWithAuth />
+        <Sentry.ErrorBoundary fallback={<div>An error occurred</div>}>
+          <AppWithAuth />
+        </Sentry.ErrorBoundary>
       </QueryClientProvider>
     </Provider>
   );

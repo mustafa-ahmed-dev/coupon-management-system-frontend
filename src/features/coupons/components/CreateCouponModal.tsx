@@ -77,7 +77,7 @@ export function CreateCouponModal({ open, onClose }: CreateCouponModalProps) {
           rules={[{ required: true, message: "Please select coupon type" }]}
         >
           <Select placeholder="Select coupon type">
-            <Select.Option value="fixed">Fixed Amount (IQD)</Select.Option>
+            <Select.Option value="fixed">Fixed Amount ($)</Select.Option>
             <Select.Option value="percentage">Percentage (%)</Select.Option>
           </Select>
         </Form.Item>
